@@ -8,7 +8,6 @@ Created on Tue Nov 13 18:49:35 2018
 import pandas as pd
 from bson.objectid import ObjectId
 import os,gc,sys
-import StupendoLibPY as sp
 import numpy as np
 import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -66,24 +65,12 @@ if __name__ == '__main__':
     secret = None
     gc.collect()
     os.system('clear')
-    con="EC"
-    database,client,url=sp.stupendodb()
-    collection=database["productos"]
-    collection1=database["clientes"]
-    rep1=pd.DataFrame(list(collection.find({"precio":{"$gt":0}},{"descripcion":1,"precio":1,"costo":1,"_id":0,"emisor_id":1})))
-    ID=[ObjectId(k) for k in rep1.emisor_id.values]
-    rep2=pd.DataFrame(list(collection1.find({"_id":{"$in":ID}},{"identificacion":1,"_id":1,"nombre_comercial":1})))
-    client.close()
-    rep2._id=rep2._id.astype(str)
-    rep1=rep1.merge(rep2,left_on='emisor_id',right_on='_id')
-    rep1=rep1.drop(columns=['emisor_id','_id']).drop_duplicates()
-    with open('C:/Users/rcastillo/Documents/rucs.csv',encoding="utf8",errors='ignore') as f:
+    with open('textinputest.csv',encoding="utf8",errors='ignore') as f:
         contents = f.read()
     x=pd.DataFrame(pd.Series(contents.split('\n')).str.split(';').tolist())
-    y=x[1:-1]
+    rep1=x[1:-1]
     for i in x.keys():
-        y[str(x.loc[0,i])]=y.pop(i)
-    rep1=rep1.merge(y,on='nombre_comercial')
+         rep1[str(x.loc[0,i])]=y.pop(i)
     rep1[["precio","costo"]]=rep1[["precio","costo"]].astype(float)
     rep1.descripcion=rep1.descripcion.astype(str)
     a1=1; a2=1; a3=1; a4=1;b=rep1.shape[0]-1
